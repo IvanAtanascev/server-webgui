@@ -1,10 +1,11 @@
 import express from "express";
 import path from "path";
 import { promises as fs } from "fs";
+import { authMiddleware } from "../middleware/auth.js";
 
 const file_api_router = express.Router();
 
-const BASE_DIR = path.resolve("user-files"); 
+const BASE_DIR = process.env.USER_PATH || path.resolve("user-files");
 
 const safeJoin = (base, target) => {
     const resolved = path.resolve(base, target);
@@ -13,6 +14,8 @@ const safeJoin = (base, target) => {
     }
     return resolved;
 };
+
+file_api_router.use(authMiddleware);
 
 file_api_router.post("/write_file", async (req, res) => {
     const { path: relativePath, content } = req.body;
